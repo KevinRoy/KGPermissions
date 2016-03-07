@@ -17,7 +17,7 @@ import java.util.List;
  * 工具类
  * Created by kevin on 16/2/29.
  */
-public class PermissionUtil {
+public class KGPermissionUtil {
 
     /**
      * 判断系统是否为6.0以上的系统

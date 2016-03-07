@@ -25,9 +25,16 @@ public class KGPermissions {
 
         if (deniedPermissions.size() > 0) {
             for (int i = 0; i < deniedPermissions.size(); i++) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(PermissionUtil.getActivity(context), deniedPermissions.get(i))) {
-                    mOnPermissionListener.afterAskNeverAgain(requestCode);
+                String permission = deniedPermissions.get(i);
+
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(KGPermissionUtil.getActivity(context), deniedPermissions.get(i))) {
+                    if (!KGPermissionsShared.isFirstPermission(permission)) {
+                        mOnPermissionListener.afterAskNeverAgain(requestCode);
+                    } else {
+                        KGPermissionsShared.putFirstPermission(permission, false);
+                    }
                 } else if (mOnPermissionListener != null) {
+                    KGPermissionsShared.putFirstPermission(permission, true);
                     mOnPermissionListener.denied(requestCode);
                 }
             }
@@ -49,11 +56,11 @@ public class KGPermissions {
     }
 
     private static void requestCommonPermission(Object context, int requestCode, String... permissions) {
-        if (!PermissionUtil.isMarshmallow()) {
+        if (!KGPermissionUtil.isMarshmallow()) {
             return;
         }
 
-        List<String> deniedPermissions = PermissionUtil.getDeniedPermissions(PermissionUtil.getActivity(context), permissions);
+        List<String> deniedPermissions = KGPermissionUtil.getDeniedPermissions(KGPermissionUtil.getActivity(context), permissions);
 
         if (deniedPermissions.size() > 0) {
             if (context instanceof Activity) {
