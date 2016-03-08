@@ -24,19 +24,15 @@ public class KGPermissions {
         }
 
         if (deniedPermissions.size() > 0) {
-            for (int i = 0; i < deniedPermissions.size(); i++) {
-                String permission = deniedPermissions.get(i);
-
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(KGPermissionUtil.getActivity(context), deniedPermissions.get(i))) {
-                    if (!KGPermissionsShared.isFirstPermission(permission)) {
-                        mOnPermissionListener.afterAskNeverAgain(requestCode);
-                    } else {
-                        KGPermissionsShared.putFirstPermission(permission, false);
-                    }
-                } else if (mOnPermissionListener != null) {
-                    KGPermissionsShared.putFirstPermission(permission, true);
-                    mOnPermissionListener.denied(requestCode);
+            if (!shouldShowRequestPermissionsRationale(KGPermissionUtil.getActivity(context), deniedPermissions)) {
+                if (!KGPermissionsShared.isFirstPermission(combinationPermissions(deniedPermissions))) {
+                    mOnPermissionListener.afterAskNeverAgain(requestCode);
+                } else {
+                    KGPermissionsShared.putFirstPermission(combinationPermissions(deniedPermissions), false);
                 }
+            } else if (mOnPermissionListener != null) {
+                KGPermissionsShared.putFirstPermission(combinationPermissions(deniedPermissions), true);
+                mOnPermissionListener.denied(requestCode);
             }
         } else {
             if (mOnPermissionListener != null) {
@@ -44,6 +40,28 @@ public class KGPermissions {
             }
         }
     }
+
+//        if (deniedPermissions.size() > 0) {
+//            for (int i = 0; i < deniedPermissions.size(); i++) {
+//                String permission = deniedPermissions.get(i);
+//
+//                if (!ActivityCompat.shouldShowRequestPermissionRationale(KGPermissionUtil.getActivity(context), deniedPermissions.get(i))) {
+//                    if (!KGPermissionsShared.isFirstPermission(permission)) {
+//                        mOnPermissionListener.afterAskNeverAgain(requestCode);
+//                    } else {
+//                        KGPermissionsShared.putFirstPermission(permission, false);
+//                    }
+//                } else if (mOnPermissionListener != null) {
+//                    KGPermissionsShared.putFirstPermission(permission, true);
+//                    mOnPermissionListener.denied(requestCode);
+//                }
+//            }
+//        } else {
+//            if (mOnPermissionListener != null) {
+//                mOnPermissionListener.granted(requestCode);
+//            }
+//        }
+//        }
 
     public static void requestPermission(Activity context, OnPermissionListener onPermissionListener, int requestCode, String... permissions) {
         mOnPermissionListener = onPermissionListener;
@@ -75,5 +93,30 @@ public class KGPermissions {
                 mOnPermissionListener.granted(requestCode);
             }
         }
+    }
+
+    private static boolean shouldShowRequestPermissionsRationale(Activity activity, List<String> permissions) {
+        if (permissions == null || permissions.size() <= 0)
+            return true;
+
+        for (int i = 0; i < permissions.size(); i++) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions.get(i))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String combinationPermissions(List<String> permissions) {
+        String permissionsString = "";
+        if (permissions == null || permissions.size() <= 0)
+            return "";
+
+        for (int i = 0; i < permissions.size(); i++) {
+            permissionsString = permissionsString.concat(permissions.get(i));
+        }
+
+        return permissionsString;
     }
 }

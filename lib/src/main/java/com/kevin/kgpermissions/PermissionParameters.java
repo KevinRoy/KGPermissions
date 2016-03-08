@@ -51,7 +51,6 @@ public class PermissionParameters {
     public static final int REQUEST_SEND_SMS= 0x24; //发送短信
     public static final int REQUEST_READ_CELL_BROADCASTS= 0x25; //读取小区广播
 
-
     public static final String WRITE_CONTACTS = Manifest.permission.WRITE_CONTACTS;
     public static final String GET_ACCOUNTS = Manifest.permission.GET_ACCOUNTS;
     public static final String READ_CONTACTS = Manifest.permission.READ_CONTACTS;
